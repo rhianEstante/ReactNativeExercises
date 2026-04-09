@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, FlatList, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
-import UserList from './components/UserList.tsx'
+
 type User = {
   id: number,
   name: String,

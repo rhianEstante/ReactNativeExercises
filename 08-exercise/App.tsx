@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 
 type User = {
   id: number,
-  name: String,
-  username: String,
-  email: String,
+  name: string,
+  username: string,
+  email: string,
   company: {
-    name: String
+    name: string
   }
-  phone: String,
-  website: String
+  phone: string,
+  website: string
 }
 
 export default function App() {
@@ -19,12 +19,11 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string|null>(null);
   const [users, setUsers] = useState<User[]>([]);
-  const [usersFiltered, setUsersFiltered] = useState<User[]>([]);
   const [search, setSearch] = useState<string>('');
-  
+
   useEffect(() => {
     fetchUsers()
-  }, [])
+  }, []);
 
   const fetchUsers = async () => {
     try{
@@ -43,25 +42,31 @@ export default function App() {
     } finally {
       setLoading(false)
     }
-
-    if (loading) {
-      return(
-        <Text>The data is loading...</Text>
-      )
-    } else if (error) {
-      <Text>{error}</Text>
-    }
-
   }
+
+  if (loading) return <Text>The data is loading...</Text>;
+  if (error) return <Text>{error}</Text>;
+
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(search.toLowerCase()) ||
+    user.username.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <View style={styles.container}>
-      <TextInput/>
-      <FlatList data={users} renderItem={({item}) => (
-        <View>
-          <Text>{item.name}</Text>
-          <Text>{item.username}</Text>
-        </View>
-      )}/>
+      <TextInput value={search} onChangeText={setSearch} placeholder="Search by name or username"/>
+      <Text>Showing {filteredUsers.length} of {users.length} users</Text>
+      <FlatList
+        data={filteredUsers}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={<Text>No users match your search</Text>}
+        renderItem={({item}) => (
+          <View>
+            <Text>{item.name}</Text>
+            <Text>{item.username}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 }
